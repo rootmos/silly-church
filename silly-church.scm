@@ -20,9 +20,6 @@
        (let ([op (car e)] [e0 (Expr (cadr e))] [e1 (Expr (caddr e))])
        `(,op ,e0 ,e1))]))
   (Expr ast))
-(unparse-Lsrc (ast-to-Lsrc '7))
-(unparse-Lsrc (ast-to-Lsrc '(+ 1 7)))
-(unparse-Lsrc (ast-to-Lsrc '(+ (- 1 8) 7)))
 
 (define-language
   L1
