@@ -13,13 +13,13 @@
     (op e0 e1)))
 
 (define-pass ast-to-Lsrc : * (ast) -> Lsrc ()
-  (Expr : * (e) -> Expr ()
+  (parse : * (e) -> Expr ()
     (cond
       [(number? e) e]
       [(and (list? e) (= 3 (length e)))
-       (let ([op (car e)] [e0 (Expr (cadr e))] [e1 (Expr (caddr e))])
+       (let ([op (car e)] [e0 (parse (cadr e))] [e1 (parse (caddr e))])
        `(,op ,e0 ,e1))]))
-  (Expr ast))
+  (parse ast))
 
 (define-language
   L1
