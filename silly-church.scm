@@ -59,36 +59,43 @@
     (- op)))
 
 (define-pass encode-operators : L2 (ast) -> L3 ()
-  (Expr : Expr (e) -> Expr ()
-    [,op
-     (cond
-       [(equal? op '+)
+  (definitions
+    (with-output-language (L3 Expr)
+      (define plus
         `(lambda (m)
            (lambda (n)
              (lambda (f)
                (lambda (x)
-                 (apply (apply m f) (apply (apply n f) x))))))]
-       [(equal? op '-)
+                 (apply (apply m f) (apply (apply n f) x)))))))
+      (define pred
+        `(lambda (n)
+           (lambda (f)
+             (lambda (x)
+               (apply
+                 (apply
+                   (apply n (lambda (g)
+                              (lambda (h)
+                                (apply h (apply g f)))))
+                   (lambda (u) x))
+                 (lambda (u) u))))))
+      (define minus
         `(apply
            (lambda (pred)
              (lambda (m)
                (lambda (n)
                  (apply (apply n pred) m))))
-           (lambda (n)
-             (lambda (f)
-               (lambda (x)
-                 (apply
-                   (apply
-                     (apply n (lambda (g)
-                                (lambda (h)
-                                  (apply h (apply g f)))))
-                     (lambda (u) x))
-                   (lambda (u) u))))))]
-       [(equal? op '*)
+           ,pred))
+      (define multiply
         `(lambda (m)
            (lambda (n)
              (lambda (f)
-               (apply m (apply n f)))))]
+               (apply m (apply n f))))))))
+  (Expr : Expr (e) -> Expr ()
+    [,op
+     (case op
+       [+ plus]
+       [- minus]
+       [* multiply]
        [else (error 'encode-operators "unsupported operator" op)])]))
 
 (define-pass output-scheme : L3 (ast) -> * ()
@@ -101,7 +108,8 @@
   (output-scheme
     (encode-operators
       (curry-operators
-        (encode-numbers (ast-to-Lsrc x))))))
+        (encode-numbers
+          (ast-to-Lsrc x))))))
 
 (define (from-church n) ((n (lambda (m) (+ 1 m))) 0))
 
