@@ -2,7 +2,7 @@ SCHEME=scheme --libdirs nanopass-framework-scheme
 
 .PHONY: repl
 repl:
-	$(SCHEME) --script silly-church.scm
+	$(SCHEME) --script repl.scm
 
 .PHONY: scheme
 scheme:

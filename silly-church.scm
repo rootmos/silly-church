@@ -121,5 +121,3 @@
               (display (from-church (eval (encode ast))))
               (newline)
               (repl))))])))
-
-(repl)
